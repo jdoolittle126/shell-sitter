@@ -1,0 +1,39 @@
+<resources>
+    <string name="app_name">Shell Sitter</string>
+
+    <!-- Bottom Navigation Labels -->
+    <string name="home">Home</string>
+    <string name="my_pets">My Pets</string>
+    <string name="care">Care</string>
+    <string name="settings">Settings</string>
+
+    <!-- Home Tabs -->
+    <string name="welcome">Welcome</string>
+    <string name="help">Help</string>
+    <string name="about">About</string>
+
+    <!-- Home Banners -->
+    <string name="banner_welcome_title">Welcome to Shell Sitter!</string>
+    <string name="banner_welcome_subtitle">Turtle &amp; Tortoise Care Guide</string>
+
+    <string name="banner_help_title">Help</string>
+    <string name="banner_help_subtitle">Shell Sitter Usage &amp; FAQ</string>
+
+    <string name="banner_about_title">About</string>
+    <string name="banner_about_subtitle">How Shell Sitter Came to Be!</string>
+
+    <!-- Pets Messages -->
+    <string name="no_saved_pets">No saved critters!\nWant to add one?</string>
+
+    <!-- Common Button Labels -->
+    <string name="returning">Return</string>
+    <string name="to_top">To Top</string>
+    <string name="read_more">Read More</string>
+    <string name="expand">Expand</string>
+    <string name="collapse">Collapse</string>
+
+    <!-- Notification Channel -->
+    <string name="channel_name">Shell Sitter Notification</string>
+    <string name="channel_description">TEST</string>
+
+</resources>
