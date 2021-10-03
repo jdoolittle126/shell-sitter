@@ -1,10 +1,14 @@
 package edu.neit.jonathandoolittle.shellsitter.ui.util
 
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.view.ViewGroup
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateColorAsState
@@ -13,37 +17,20 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.absoluteOffset
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -65,8 +52,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import edu.neit.jonathandoolittle.shellsitter.R
-import edu.neit.jonathandoolittle.shellsitter.ui.menus.WebPageScreen
 import edu.neit.jonathandoolittle.shellsitter.ui.theme.BookMarkIcon
 import edu.neit.jonathandoolittle.shellsitter.ui.theme.RainyLightGreen
 import edu.neit.jonathandoolittle.shellsitter.ui.theme.Typography
@@ -93,7 +80,7 @@ fun Banner(
     var imageBox: @Composable () -> Unit = {
             Box(
                 modifier = Modifier
-                    .fillMaxWidth(fraction = if(anchor == BannerAnchor.LEFT) 0.25f else 1f)
+                    .fillMaxWidth(fraction = if (anchor == BannerAnchor.LEFT) 0.25f else 1f)
                     .height(60.dp)
             ) {
                 if (imageResource != null) {
@@ -108,9 +95,10 @@ fun Banner(
 
         Column(modifier = Modifier
             .align(Alignment.CenterVertically)
-            .fillMaxWidth(fraction = if(anchor == BannerAnchor.RIGHT) 0.75f else 1f),
+            .defaultMinSize(minHeight = 60.dp)
+            .fillMaxWidth(fraction = if (anchor == BannerAnchor.RIGHT) 0.75f else 1f),
             horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = title, style = Typography.h2)
+            Text(text = title, style = Typography.h2, maxLines = 1)
             Text(text = subtitle, style = Typography.body2)
             Divider(modifier = Modifier.padding(top = 5.dp))
         }
@@ -121,8 +109,17 @@ fun Banner(
     }
 }
 
+@Preview
 @Composable
-fun ReadingCard(
+fun ReadingCardPreview() {
+    ReadingCard(title = "Sample", markerColor = Blue) {
+        Text("WOW!")
+    }
+
+}
+
+@Composable
+fun LegacyReadingCard(
     title: String,
     contentPreview: String,
     markerColor: Color = Blue,
@@ -149,10 +146,7 @@ fun ReadingCard(
             Row() {
                 Text(text = title,
                     modifier = Modifier.padding(vertical = 2.dp),
-                    style =  TextStyle(
-                        fontFamily = FontFamily.Default, //TODO Move text styles
-                        fontWeight = FontWeight.W300,
-                        fontSize = 27.sp),
+                    style =  Typography.h2,
                     maxLines = 1
                 )
                 Box(modifier = Modifier
@@ -191,7 +185,7 @@ fun ReadingCard(
                     .padding(top = 10.dp),
                     contentAlignment = Alignment.TopEnd
                 ) {
-                    ExpandButton(onClick = {
+                    LegacyExpandButton(onClick = {
                         expanded = !it
                     })
                 }
@@ -216,6 +210,122 @@ fun ReadingCard(
     }
 }
 
+@Composable
+fun CardExpander(
+    modifier: Modifier = Modifier,
+    isExpanded: Boolean,
+    onToggle: () -> Unit,
+    preview: @Composable BoxScope.() -> Unit = {},
+    expanded: @Composable ColumnScope.() -> Unit,
+) {
+
+    Column(
+        modifier = modifier
+    ) {
+
+        Row(
+            Modifier
+                .padding(vertical = 10.dp)
+                .align(Alignment.End)
+        ) {
+            Box(
+                Modifier.fillMaxWidth(fraction = .70f)
+            ) {
+                if(!isExpanded) {
+                    preview.invoke(this)
+                }
+            }
+            Box(modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.Top)
+                .padding(top = 10.dp),
+                contentAlignment = Alignment.TopEnd
+            ) {
+                LegacyExpandButton(onClick = {
+                    onToggle()
+                })
+            }
+        }
+
+        if(isExpanded) {
+            expanded.invoke(this)
+            Row(
+                Modifier
+                    .align(Alignment.End)
+                    .padding(4.dp)
+                    .padding(top = 0.dp)
+            ) {
+                CardButton(text= R.string.to_top, icon = Icons.Default.KeyboardArrowUp, onClick = {
+                    //TODO Scroll to top
+                })
+            }
+        }
+
+    }
+
+}
+
+/**
+ * Reading cards are a type of rounded card
+ * with a shadow and bookmark icon. Typically,
+ * reading cards are displayed as a stack and fill
+ * the entire width, however this can be overridden
+ * using the modifier.
+ *
+ * @param modifier Modifier used to adjust the layout algorithm or draw decoration content (ex. background)
+ * @param title The title of this reading card
+ * @param markerColor The [Color] to tint the bookmark icon
+ * @param content The composable content to be displayed inside. The card's height will match the content
+ */
+@Composable
+fun ReadingCard(
+    modifier: Modifier = Modifier,
+    title: String,
+    markerColor: Color,
+    content: @Composable (RowScope.() -> Unit)
+) {
+    Card(
+        elevation = 5.dp,
+        shape = RoundedCornerShape(corner = CornerSize(16.dp)),
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth()
+            .composed { modifier }
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 10.dp)
+        ) {
+            Row {
+                Text(
+                    text = title,
+                    modifier = Modifier.padding(vertical = 2.dp),
+                    style = Typography.h2,
+                    maxLines = 1
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.TopEnd
+                ) {
+                    BookMarkIcon(
+                        modifier = Modifier
+                            .absoluteOffset(y = (-3).dp)
+                            .padding(end = 8.dp),
+                        color = markerColor
+                    )
+                }
+            }
+            Row(modifier = Modifier
+                .padding(vertical = 10.dp)
+            ) {
+                content.invoke(this)
+            }
+
+        }
+    }
+}
+
+
 /////////////////////////////////
 //// BUTTONS
 ////////////////////////////////
@@ -223,7 +333,7 @@ fun ReadingCard(
 //TODO clean
 @Preview(showBackground = true)
 @Composable
-fun ExpandButton(
+fun LegacyExpandButton(
     text: String = "expand",
     icon: ImageVector = Icons.Default.Add,
     textExpand: String? = "return",
@@ -291,7 +401,9 @@ fun ExpandButton(
 }
 
 /**
- * A button to be displayed on a [ReadingCard]
+ * A button to be displayed on a [LegacyReadingCard]
+ *
+ * TODO Needs modifier parameter
  *
  * @param text The string resource to display
  * @param icon The icon to display
@@ -352,14 +464,20 @@ fun CardButton(
 /**
  * Allows for an image to be selected from local storage
  * and rendered as a circle with a thin border. Displays
- * with a size of 150dp.
+ * with the following default settings. Use the modifier
+ * parameter to override them.
  *
- * TODO Move set values as parameters with default values
+ *             .size(150.dp)
+ *             .align(Alignment.CenterVertically)
+ *             .border(1.dp, Color.LightGray.copy(alpha = 0.25f), CircleShape)
+ *             .clip(CircleShape)
  *
+ * @param modifier Modifier used to adjust the layout algorithm or draw decoration content (ex. background)
  * @param onImageSelected Callback for when an image is selected. This function takes care of displaying the image.
  */
 @Composable
 fun CircleImagePicker(
+    modifier: Modifier = Modifier,
     onImageSelected: (Uri?) -> Unit = {}
 ) {
 
@@ -377,22 +495,25 @@ fun CircleImagePicker(
         horizontalArrangement = Arrangement.Center
     ) {
 
-        val modifier = Modifier
-            .size(150.dp)
+        val updatedModifier = Modifier
+            .size(150.dp) // Default modifier settings
             .align(Alignment.CenterVertically)
             .border(1.dp, Color.LightGray.copy(alpha = 0.25f), CircleShape)
             .clip(CircleShape)
+            .composed { modifier } // Apply user settings
             .clickable {
-                launcher.launch("image/*")
+                launcher.launch("image/*") // TODO Add option for files or camera
             }
 
         if(imageUri == null) {
             PainterOrBitmapImage(
+                // Default image... TODO User supplied default iamge
                 painter = painterResource(id = R.drawable.ic_launcher_foreground),
-                modifier = modifier
+                modifier = updatedModifier
             )
         } else {
             imageUri?.let {
+                // TODO Update for camera
                 if (Build.VERSION.SDK_INT < 28) {
                     bitmap.value = MediaStore.Images
                         .Media.getBitmap(context.contentResolver,it)
@@ -405,7 +526,7 @@ fun CircleImagePicker(
                 bitmap.value?.let {  btm ->
                     PainterOrBitmapImage(
                         bitmap = btm.asImageBitmap(),
-                        modifier = modifier
+                        modifier = updatedModifier
                     )
                 }
             }
@@ -420,7 +541,7 @@ fun CircleImagePicker(
  * @param painter The painter to use, if any
  * @param bitmap The bitmap to use, if any
  * @param contentDescription The content description of this image. Defaults to null
- * @param modifier
+ * @param modifier Modifier used to adjust the layout algorithm or draw decoration content (ex. background)
  */
 @Composable
 fun PainterOrBitmapImage(
@@ -444,3 +565,26 @@ fun PainterOrBitmapImage(
     }
 }
 
+// TODO Clean
+@SuppressLint("SetJavaScriptEnabled")
+@Composable
+fun WebPageScreen(urlToRender: String) {
+
+    val coroutineScope = rememberCoroutineScope()
+
+    AndroidView(factory = {
+        WebView(it).apply {
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+            webViewClient = WebViewClient()
+            loadUrl(urlToRender)
+            isVerticalScrollBarEnabled = false
+        }
+    }, update = {
+        coroutineScope.run {
+            it.loadUrl(urlToRender)
+        }
+    })
+}

@@ -19,7 +19,7 @@ val Typography = Typography(
     h2 = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.W300,
-        fontSize = 26.sp),
+        fontSize = 22.sp),
 
     // Tabs & Tab subtitles
     subtitle1 = TextStyle(

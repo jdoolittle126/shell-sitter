@@ -11,13 +11,13 @@
         android:theme="@style/Theme.ShellSitter">
 
         <receiver
-            android:name=".models.AlarmReceiver"
+            android:name="edu.neit.jonathandoolittle.shellsitter.domain.models.AlarmReceiver"
             android:enabled="true"
             android:exported="false" >
         </receiver>
 
         <service
-            android:name=".models.ShellNotificationService"
+            android:name="edu.neit.jonathandoolittle.shellsitter.domain.models.ShellNotificationService"
             android:exported="false" >
         </service>
 

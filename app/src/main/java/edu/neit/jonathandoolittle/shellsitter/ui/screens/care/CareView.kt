@@ -28,7 +28,8 @@ import edu.neit.jonathandoolittle.shellsitter.ui.util.PageView2
 fun CareView() {
 
     val viewModel = viewModel(modelClass = CareViewModel::class.java)
-    val pagerState = rememberPagerState(pageCount = viewModel.getTabs().size)
+    //val pagerState = rememberPagerState(pageCount = viewModel.getTabs().size)
+    val pagerState = rememberPagerState(0)
 
     PageView2(
         viewModel = viewModel,

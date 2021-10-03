@@ -34,7 +34,8 @@ import edu.neit.jonathandoolittle.shellsitter.ui.util.PageView2
 fun SettingsView() {
 
     val viewModel = viewModel(modelClass = SettingsViewModel::class.java)
-    val pagerState = rememberPagerState(pageCount = viewModel.getTabs().size)
+    //val pagerState = rememberPagerState(pageCount = viewModel.getTabs().size)
+    val pagerState = rememberPagerState(0)
 
     PageView2(
         viewModel = viewModel,
