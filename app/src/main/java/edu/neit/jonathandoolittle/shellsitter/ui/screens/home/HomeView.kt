@@ -2,41 +2,23 @@ package edu.neit.jonathandoolittle.shellsitter.ui.screens.home
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import com.google.accompanist.pager.calculateCurrentOffsetForPage
-import com.google.android.material.math.MathUtils.lerp
 import edu.neit.jonathandoolittle.shellsitter.R
-import edu.neit.jonathandoolittle.shellsitter.models.ArticleModel
 import edu.neit.jonathandoolittle.shellsitter.ui.menus.ShellSitterModelRender
-import edu.neit.jonathandoolittle.shellsitter.ui.menus.SlidingNavigationBar
 import edu.neit.jonathandoolittle.shellsitter.ui.util.Banner
 import edu.neit.jonathandoolittle.shellsitter.ui.util.BannerAnchor
-import edu.neit.jonathandoolittle.shellsitter.ui.util.PageView
 import edu.neit.jonathandoolittle.shellsitter.ui.util.PageView2
-import edu.neit.jonathandoolittle.shellsitter.ui.util.ReadingCard
-import kotlinx.coroutines.InternalCoroutinesApi
-import kotlin.math.absoluteValue
 
 /*
 enum class HomeMenuOptions {
@@ -54,15 +36,16 @@ enum class HomeMenuOptions {
 fun HomeView() {
 
     val viewModel = viewModel(modelClass = HomeViewModel::class.java)
-    val pagerState = rememberPagerState(pageCount = viewModel.getTabs().size)
+    //val pagerState = rememberPagerState(pageCount = viewModel.getTabs().size)
+    val pagerState = rememberPagerState(0)
 
     PageView2(
         viewModel = viewModel,
         pagerState = pagerState,
         whenEmpty = {  EmptyHome() }
-    ) {
+    ) { page ->
         Column {
-            when(pagerState.currentPage) {
+            when(page) {
                 0 -> {
                     Banner(anchor = BannerAnchor.LEFT, 
                         imageResource = R.drawable.ic_turtle_left, 
@@ -98,7 +81,7 @@ fun HomeView() {
             
             Spacer(modifier = Modifier.height(15.dp))
 
-            viewModel.getPage(pagerState.currentPage).entities.forEach {
+            viewModel.getPage(page).entities.forEach {
                 ShellSitterModelRender(model = it, viewModel = viewModel, navigationController = rememberNavController())
             }
         }

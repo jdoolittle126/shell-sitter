@@ -1,16 +1,8 @@
 package edu.neit.jonathandoolittle.shellsitter.ui.screens.settings
 
 import android.app.Application
-import androidx.compose.ui.graphics.Color
 import edu.neit.jonathandoolittle.shellsitter.R
-import edu.neit.jonathandoolittle.shellsitter.models.ArticleModel
-import edu.neit.jonathandoolittle.shellsitter.models.PageModel
 import edu.neit.jonathandoolittle.shellsitter.ui.screens.SegmentViewModel
-import edu.neit.jonathandoolittle.shellsitter.ui.menus.SlidingNavigationOptions
-import edu.neit.jonathandoolittle.shellsitter.ui.theme.RainyDarkBlue
-import edu.neit.jonathandoolittle.shellsitter.ui.theme.RainyDarkGreen
-import edu.neit.jonathandoolittle.shellsitter.ui.theme.RainyLightBlue
-import edu.neit.jonathandoolittle.shellsitter.ui.theme.RainyYellow
 
 /**
  *

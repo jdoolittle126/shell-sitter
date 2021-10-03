@@ -1,14 +1,8 @@
 package edu.neit.jonathandoolittle.shellsitter.ui.util
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.*
 import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
-import androidx.compose.animation.slideIn
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,6 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.google.accompanist.insets.imePadding
+import com.google.accompanist.insets.systemBarsPadding
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
@@ -52,12 +48,14 @@ fun PageView(
     whenEmpty: @Composable () -> Unit
 ) {
 
-    val pagerState = rememberPagerState(pageCount = viewModel.getTabs().size)
+   // val pagerState = rememberPagerState(pageCount = viewModel.getTabs().size)
+    val pagerState = rememberPagerState(0)
 
     Column {
         SlidingNavigationBar(titleResource = viewModel.titleResource, items = viewModel.getTabs(), state = pagerState)
         HorizontalPager(
-            state = pagerState
+            state = pagerState,
+            count = viewModel.getTabs().size
         ) { page ->
             Box(
                 Modifier
@@ -96,7 +94,7 @@ fun PageView2(
     viewModel: SegmentViewModel,
     pagerState: PagerState,
     whenEmpty: @Composable () -> Unit,
-    content: @Composable () -> Unit
+    content: @Composable (Int) -> Unit
 ) {
 
     val state = remember {
@@ -120,12 +118,14 @@ fun PageView2(
     Column {
         SlidingNavigationBar(titleResource = viewModel.titleResource, items = viewModel.getTabs(), state = pagerState)
         HorizontalPager(
-            state = pagerState
+            state = pagerState,
+            count = viewModel.getTabs().size
         ) { page ->
             Box(
                 Modifier
                     .fillMaxSize()
-                    .padding(bottom = 24.dp, top = 10.dp)
+                    .systemBarsPadding()
+                    .padding(top = 10.dp)
                     .graphicsLayer {
                         val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue
                     }
@@ -134,9 +134,9 @@ fun PageView2(
                 Column() {
                     AnimatedVisibility(
                         visible = visible.value,
-                        enter = slideInVertically(),
+                        enter = slideInVertically() + fadeIn(),
                         exit = slideOutVertically() + shrinkVertically() + fadeOut()) {
-                        content()
+                        content(page)
                     }
                 }
             }
